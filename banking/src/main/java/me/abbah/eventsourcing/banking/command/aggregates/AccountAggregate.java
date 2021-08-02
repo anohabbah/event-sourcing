@@ -1,7 +1,7 @@
-package me.abbah.eventsourcing.banking.commands.aggregates;
+package me.abbah.eventsourcing.banking.command.aggregates;
 
 import lombok.extern.slf4j.Slf4j;
-import me.abbah.eventsourcing.banking.commands.exceptions.BalanceNotSufficientException;
+import me.abbah.eventsourcing.banking.command.exceptions.BalanceNotSufficientException;
 import me.abbah.eventsourcing.banking.coreapi.commands.CreateAccountCommand;
 import me.abbah.eventsourcing.banking.coreapi.commands.CreditAccountCommand;
 import me.abbah.eventsourcing.banking.coreapi.commands.DebitAccountCommand;

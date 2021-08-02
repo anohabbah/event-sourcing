@@ -1,4 +1,4 @@
-package me.abbah.eventsourcing.banking.commands.exceptions;
+package me.abbah.eventsourcing.banking.command.exceptions;
 
 public class BalanceNotSufficientException extends RuntimeException {
     public BalanceNotSufficientException(String message) {

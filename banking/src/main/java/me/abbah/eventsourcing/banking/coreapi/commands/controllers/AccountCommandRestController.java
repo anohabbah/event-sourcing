@@ -2,9 +2,9 @@ package me.abbah.eventsourcing.banking.coreapi.commands.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.abbah.eventsourcing.banking.commands.dto.CreateAccountRequestDTO;
-import me.abbah.eventsourcing.banking.commands.dto.CreditAccountRequestDTO;
-import me.abbah.eventsourcing.banking.commands.dto.DebitAccountRequestDTO;
+import me.abbah.eventsourcing.banking.command.dto.CreateAccountRequestDTO;
+import me.abbah.eventsourcing.banking.command.dto.CreditAccountRequestDTO;
+import me.abbah.eventsourcing.banking.command.dto.DebitAccountRequestDTO;
 import me.abbah.eventsourcing.banking.coreapi.commands.CreateAccountCommand;
 import me.abbah.eventsourcing.banking.coreapi.commands.CreditAccountCommand;
 import me.abbah.eventsourcing.banking.coreapi.commands.DebitAccountCommand;
@@ -25,7 +25,7 @@ public class AccountCommandRestController {
     private final CommandGateway gateway;
     private final EventStore store;
 
-    @PostMapping(path = "")
+    @PostMapping
     public CompletableFuture<Object> create(@RequestBody CreateAccountRequestDTO dto) {
         log.info(dto.getInitialBalance().toString());
         return gateway.send(
