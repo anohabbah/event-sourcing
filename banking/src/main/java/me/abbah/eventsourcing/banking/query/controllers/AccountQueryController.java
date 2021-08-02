@@ -5,7 +5,10 @@ import me.abbah.eventsourcing.banking.query.dto.*;
 import me.abbah.eventsourcing.banking.query.queries.*;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
+import org.axonframework.queryhandling.SubscriptionQueryResult;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -35,5 +38,16 @@ public class AccountQueryController {
                 new GetAccountHistoryQuery(accountId),
                 ResponseTypes.instanceOf(AccountHistoryDTO.class)
         );
+    }
+
+    @GetMapping(path = "/{accountId}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<AccountDTO> subscribeToAccount(@PathVariable String accountId) {
+        SubscriptionQueryResult<AccountDTO, AccountDTO> res = gateway.subscriptionQuery(
+                new GetAccountByIdQuery(accountId),
+                ResponseTypes.instanceOf(AccountDTO.class),
+                ResponseTypes.instanceOf(AccountDTO.class)
+        );
+
+        return res.initialResult().concatWith(res.updates());
     }
 }

@@ -7,13 +7,17 @@ import me.abbah.eventsourcing.banking.coreapi.events.AccountActivatedEvent;
 import me.abbah.eventsourcing.banking.coreapi.events.AccountCreatedEvent;
 import me.abbah.eventsourcing.banking.coreapi.events.AccountCreditedEvent;
 import me.abbah.eventsourcing.banking.coreapi.events.AccountDebitedEvent;
+import me.abbah.eventsourcing.banking.query.dto.AccountDTO;
 import me.abbah.eventsourcing.banking.query.entities.Account;
 import me.abbah.eventsourcing.banking.query.entities.AccountOperation;
 import me.abbah.eventsourcing.banking.query.entities.OperationType;
+import me.abbah.eventsourcing.banking.query.mappers.AccountMapper;
+import me.abbah.eventsourcing.banking.query.queries.GetAccountByIdQuery;
 import me.abbah.eventsourcing.banking.query.repositories.AccountOperationRepository;
 import me.abbah.eventsourcing.banking.query.repositories.AccountRepository;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.ResetHandler;
+import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,8 @@ import java.util.Date;
 public class EventHandlerService {
     private AccountRepository accountRepository;
     private AccountOperationRepository operationRepository;
+    private QueryUpdateEmitter emitter;
+    private AccountMapper accountMapper;
 
     @ResetHandler
     public void resetHandler() {
@@ -68,7 +74,13 @@ public class EventHandlerService {
         operation.setAccount(account);
 
         operationRepository.save(operation);
-        accountRepository.save(account);
+        Account savedAccount = accountRepository.save(account);
+
+        emitter.emit(
+                GetAccountByIdQuery.class,
+                query -> query.getAccountId().equals(event.getId()),
+                accountMapper.fromAccount(savedAccount)
+        );
     }
 
     @Transactional
@@ -86,6 +98,11 @@ public class EventHandlerService {
         operation.setAccount(account);
 
         operationRepository.save(operation);
-        accountRepository.save(account);
+        Account savedAccount = accountRepository.save(account);
+
+        emitter.emit(
+                msg -> ((GetAccountByIdQuery) msg.getPayload()).getAccountId().equals(event.getId()),
+                accountMapper.fromAccount(savedAccount)
+        );
     }
 }
